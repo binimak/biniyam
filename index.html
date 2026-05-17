@@ -1,99 +1,266 @@
 <!DOCTYPE html>
-<html>
+<html lang="am">
 <head>
-  <title>E-LMIS Online</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lottery 3000 Slots System</title>
 
-    header {
-      background: #1f4e79;
-      color: white;
-      padding: 15px;
-      text-align: center;
-    }
+<style>
+body{
+    font-family:Arial,sans-serif;
+    background:#eef2f7;
+    padding:20px;
+    margin:0;
+}
 
-    .login-box, .dashboard {
-      width: 300px;
-      margin: 80px auto;
-      padding: 20px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
+.container{
+    max-width:1100px;
+    margin:auto;
+    background:#fff;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,0.15);
+}
 
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-    }
+/* ticket image */
+.ticket-preview{
+    padding:20px;
+    text-align:center;
+    background:#f8fafc;
+    border-bottom:3px solid #1e63d6;
+}
 
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #1f4e79;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
+.ticket-preview img{
+    width:100%;
+    max-width:420px;
+    border:8px solid #0f2f8f;
+    border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
 
-    button:hover {
-      background: #163b5c;
-    }
+/* header */
+.top{
+    background:linear-gradient(135deg,#1e63d6,#0f2f8f);
+    color:white;
+    text-align:center;
+    padding:20px;
+}
 
-    .dashboard {
-      display: none;
-    }
+.top h1{
+    margin:0;
+    font-size:28px;
+}
 
-    .card {
-      background: #e3eaf2;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-    }
-  </style>
+/* form */
+.form{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:12px;
+    padding:20px;
+    background:#f6f9ff;
+}
+
+input{
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    font-size:14px;
+    outline:none;
+}
+
+input:focus{
+    border-color:#1e63d6;
+}
+
+button{
+    grid-column:span 3;
+    padding:14px;
+    border:none;
+    background:#1e63d6;
+    color:white;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#0f2f8f;
+}
+
+/* slots */
+.slots{
+    display:grid;
+    grid-template-columns:repeat(9,1fr);
+    gap:5px;
+    padding:20px;
+    max-height:500px;
+    overflow:auto;
+    background:white;
+}
+
+.slot{
+    padding:12px;
+    text-align:center;
+    border:1px solid #ddd;
+    border-radius:8px;
+    cursor:pointer;
+    background:white;
+    font-size:14px;
+    font-weight:bold;
+    transition:.2s;
+}
+
+.slot:hover{
+    transform:scale(1.05);
+}
+
+.slot.filled{
+    background:#22c55e;
+    color:white;
+}
+
+.slot.selected{
+    background:#1e63d6;
+    color:white;
+}
+
+/* list */
+.list{
+    padding:20px;
+    max-height:300px;
+    overflow:auto;
+}
+
+.item{
+    display:flex;
+    justify-content:space-between;
+    padding:10px;
+    border-bottom:1px solid #eee;
+    font-size:14px;
+}
+
+.empty{
+    color:red;
+    font-weight:bold;
+}
+</style>
 </head>
+
 <body>
 
-<header>
-  <h2>E-LMIS Online System</h2>
-</header>
+<div class="container">
 
-<div class="login-box" id="loginBox">
-  <h3>Login</h3>
-  <input type="text" id="username" placeholder="Username">
-  <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-</div>
+    <div class="ticket-preview">
+        <img src="lottery-ticket.jpg" alt="Lottery Ticket">
+    </div>
 
-<div class="dashboard" id="dashboard">
-  <h3>Welcome!</h3>
-  <div class="card">Total Students: 120</div>
-  <div class="card">Active Courses: 8</div>
-  <div class="card">Messages: 3</div>
-  <button onclick="logout()">Logout</button>
+    <div class="top">
+        <h1>ዳንኤል የመኪና እጣ)</h1>
+        <h2>ኢትዮጵያ ንግድ ባንክ 1000746664568</h2>
+       <h1>ዳንኤል የመኪና እጣ</h1>
+    </div>
+
+    <div class="form">
+        <input id="name" placeholder="Name">
+        <input id="phone" placeholder="Phone">
+        <input id="selectedSlot" placeholder="Selected Slot" readonly>
+        <button onclick="register()">Register</button>
+    </div>
+
+    <div class="slots" id="slots"></div>
+    <div class="list" id="list"></div>
+
 </div>
 
 <script>
-  function login() {
-    var user = document.getElementById("username").value;
-    var pass = document.getElementById("password").value;
+let data = {};
+let selected = null;
 
-   
-      document.getElementById("loginBox").style.display = "none";
-      document.getElementById("dashboard").style.display = "block";
-    } else {
-      alert("Wrong username or password");
+const slotsDiv = document.getElementById("slots");
+const listDiv = document.getElementById("list");
+
+/* init 3000 slots */
+for(let i=1;i<=3000;i++){
+    data[i]=null;
+}
+
+function renderSlots(){
+    let html="";
+    
+    for(let i=1;i<=3000;i++){
+        let cls="slot";
+
+        if(data[i]) cls+=" filled";
+        if(selected===i) cls+=" selected";
+
+        html += `<div class="${cls}" onclick="selectSlot(${i})">${i}</div>`;
     }
-  }
 
-  function logout() {
-    document.getElementById("dashboard").style.display = "none";
-    document.getElementById("loginBox").style.display = "block";
-  }
+    slotsDiv.innerHTML=html;
+}
+
+function selectSlot(i){
+    selected=i;
+    document.getElementById("selectedSlot").value=i;
+    renderSlots();
+}
+
+function renderList(){
+    listDiv.innerHTML="";
+
+    for(let i=1;i<=3000;i++){
+        const div=document.createElement("div");
+        div.className="item";
+
+        if(data[i]){
+            div.innerHTML=`
+                <div>#${i} - ${data[i].name}</div>
+                <div>${data[i].phone}</div>
+            `;
+        }else{
+            div.innerHTML=`
+                <div>#${i}</div>
+                <div class="empty">EMPTY</div>
+            `;
+        }
+
+        listDiv.appendChild(div);
+    }
+}
+
+function register(){
+    const name=document.getElementById("name").value.trim();
+    const phone=document.getElementById("phone").value.trim();
+
+    if(!selected){
+        alert("Select slot first");
+        return;
+    }
+
+    if(!name || !phone){
+        alert("Fill all fields");
+        return;
+    }
+
+    if(data[selected]){
+        alert("Slot already taken");
+        return;
+    }
+
+    data[selected]={name,phone};
+
+    document.getElementById("name").value="";
+    document.getElementById("phone").value="";
+    document.getElementById("selectedSlot").value="";
+    selected=null;
+
+    renderSlots();
+    renderList();
+}
+
+renderSlots();
+renderList();
 </script>
 
 </body>
