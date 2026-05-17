@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lottery 3000 Slots System</title>
+<title>ዳንኤል የመኪና እጣ</title>
 
 <style>
 body{
@@ -22,7 +22,6 @@ body{
     box-shadow:0 15px 40px rgba(0,0,0,0.15);
 }
 
-/* ticket image */
 .ticket-preview{
     padding:20px;
     text-align:center;
@@ -38,7 +37,6 @@ body{
     box-shadow:0 8px 20px rgba(0,0,0,0.2);
 }
 
-/* header */
 .top{
     background:linear-gradient(135deg,#1e63d6,#0f2f8f);
     color:white;
@@ -51,7 +49,11 @@ body{
     font-size:28px;
 }
 
-/* form */
+.top h2{
+    margin:10px 0;
+    font-size:18px;
+}
+
 .form{
     display:grid;
     grid-template-columns:1fr 1fr 1fr;
@@ -68,15 +70,9 @@ input{
     outline:none;
 }
 
-input:focus{
-    border-color:#1e63d6;
-}
-
 button{
-    grid-column:span 3;
     padding:14px;
     border:none;
-    background:#1e63d6;
     color:white;
     border-radius:10px;
     font-size:16px;
@@ -84,11 +80,20 @@ button{
     cursor:pointer;
 }
 
-button:hover{
-    background:#0f2f8f;
+.register-btn{
+    grid-column:span 3;
+    background:#1e63d6;
 }
 
-/* slots */
+.reset-btn{
+    grid-column:span 3;
+    background:#dc2626;
+}
+
+button:hover{
+    opacity:.9;
+}
+
 .slots{
     display:grid;
     grid-template-columns:repeat(9,1fr);
@@ -96,7 +101,6 @@ button:hover{
     padding:20px;
     max-height:500px;
     overflow:auto;
-    background:white;
 }
 
 .slot{
@@ -108,11 +112,6 @@ button:hover{
     background:white;
     font-size:14px;
     font-weight:bold;
-    transition:.2s;
-}
-
-.slot:hover{
-    transform:scale(1.05);
 }
 
 .slot.filled{
@@ -125,7 +124,6 @@ button:hover{
     color:white;
 }
 
-/* list */
 .list{
     padding:20px;
     max-height:300px;
@@ -146,7 +144,6 @@ button:hover{
 }
 </style>
 </head>
-
 <body>
 
 <div class="container">
@@ -156,16 +153,18 @@ button:hover{
     </div>
 
     <div class="top">
-        <h1>ዳንኤል የመኪና እጣ)</h1>
+        <h1>ዳንኤል የመኪና እጣ</h1>
         <h2>ኢትዮጵያ ንግድ ባንክ 1000746664568</h2>
-       <h1>ዳንኤል የመኪና እጣ</h1>
+        <p>ዳንኤል ታዴ አድማሱ</p>
     </div>
 
     <div class="form">
         <input id="name" placeholder="Name">
-        <input id="phone" placeholder="Phone">
+        <input id="phone" type="number" placeholder="Phone">
         <input id="selectedSlot" placeholder="Selected Slot" readonly>
-        <button onclick="register()">Register</button>
+
+        <button class="register-btn" onclick="register()">Register</button>
+        <button class="reset-btn" onclick="resetAll()">Reset All</button>
     </div>
 
     <div class="slots" id="slots"></div>
@@ -174,20 +173,25 @@ button:hover{
 </div>
 
 <script>
-let data = {};
+let data = JSON.parse(localStorage.getItem("lotteryData")) || {};
 let selected = null;
 
 const slotsDiv = document.getElementById("slots");
 const listDiv = document.getElementById("list");
 
-/* init 3000 slots */
 for(let i=1;i<=3000;i++){
-    data[i]=null;
+    if(data[i]===undefined){
+        data[i]=null;
+    }
+}
+
+function saveData(){
+    localStorage.setItem("lotteryData", JSON.stringify(data));
 }
 
 function renderSlots(){
     let html="";
-    
+
     for(let i=1;i<=3000;i++){
         let cls="slot";
 
@@ -249,6 +253,7 @@ function register(){
     }
 
     data[selected]={name,phone};
+    saveData();
 
     document.getElementById("name").value="";
     document.getElementById("phone").value="";
@@ -257,6 +262,15 @@ function register(){
 
     renderSlots();
     renderList();
+
+    alert("Saved successfully");
+}
+
+function resetAll(){
+    if(confirm("Delete all saved data?")){
+        localStorage.removeItem("lotteryData");
+        location.reload();
+    }
 }
 
 renderSlots();
