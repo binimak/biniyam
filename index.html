@@ -179,98 +179,65 @@ let selected = null;
 const slotsDiv = document.getElementById("slots");
 const listDiv = document.getElementById("list");
 
-for(let i=1;i<=3000;i++){
-    if(data[i]===undefined){
-        data[i]=null;
-    }
-}
-
 function saveData(){
-    localStorage.setItem("lotteryData", JSON.stringify(data));
+   localStorage.setItem("lotteryData", JSON.stringify(data));
 }
 
 function renderSlots(){
-    let html="";
+   let html = "";
 
-    for(let i=1;i<=3000;i++){
-        let cls="slot";
+   for(let i=1; i<=3000; i++){
+      let cls = "slot";
 
-        if(data[i]) cls+=" filled";
-        if(selected===i) cls+=" selected";
+      if(data[i]) cls += " filled";
+      if(selected === i) cls += " selected";
 
-        html += `<div class="${cls}" onclick="selectSlot(${i})">${i}</div>`;
-    }
+      html += `<div class="${cls}" onclick="selectSlot(${i})">${i}</div>`;
+   }
 
-    slotsDiv.innerHTML=html;
+   slotsDiv.innerHTML = html;
 }
 
 function selectSlot(i){
-    selected=i;
-    document.getElementById("selectedSlot").value=i;
-    renderSlots();
-}
-
-function renderList(){
-    listDiv.innerHTML="";
-
-    for(let i=1;i<=3000;i++){
-        const div=document.createElement("div");
-        div.className="item";
-
-        if(data[i]){
-            div.innerHTML=`
-                <div>#${i} - ${data[i].name}</div>
-                <div>${data[i].phone}</div>
-            `;
-        }else{
-            div.innerHTML=`
-                <div>#${i}</div>
-                <div class="empty">EMPTY</div>
-            `;
-        }
-
-        listDiv.appendChild(div);
-    }
+   selected = i;
+   document.getElementById("selectedSlot").value = i;
+   renderSlots();
 }
 
 function register(){
-    const name=document.getElementById("name").value.trim();
-    const phone=document.getElementById("phone").value.trim();
+   const name = document.getElementById("name").value.trim();
+   const phone = document.getElementById("phone").value.trim();
 
-    if(!selected){
-        alert("Select slot first");
-        return;
-    }
+   if(!selected) return alert("ቁጥር ምረጥ");
+   if(!name || !phone) return alert("ስም እና ስልክ ሙላ");
 
-    if(!name || !phone){
-        alert("Fill all fields");
-        return;
-    }
+   if(data[selected]) return alert("ይህ ቁጥር ተይዟል");
 
-    if(data[selected]){
-        alert("Slot already taken");
-        return;
-    }
+   data[selected] = { name, phone };
+   saveData();
 
-    data[selected]={name,phone};
-    saveData();
+   document.getElementById("name").value = "";
+   document.getElementById("phone").value = "";
+   document.getElementById("selectedSlot").value = "";
+   selected = null;
 
-    document.getElementById("name").value="";
-    document.getElementById("phone").value="";
-    document.getElementById("selectedSlot").value="";
-    selected=null;
-
-    renderSlots();
-    renderList();
-
-    alert("Saved successfully");
+   renderSlots();
+   renderList();
 }
 
-function resetAll(){
-    if(confirm("Delete all saved data?")){
-        localStorage.removeItem("lotteryData");
-        location.reload();
-    }
+function renderList(){
+   listDiv.innerHTML = "";
+
+   for(let key in data){
+      if(data[key]){
+         listDiv.innerHTML += `
+         <div class="item">
+            <span>#${key} - ${data[key].name}</span>
+            <span>${data[key].phone}</span>
+         </div>
+         `;
+      }
+   }
 }
 
 renderSlots();
