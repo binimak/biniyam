@@ -469,10 +469,38 @@ function resetAll(){
    START
 ========================= */
 
-renderSlots();
+<script>
 
-renderList();
+/* PAGE LOAD */
+window.onload = () => {
 
+   const savedData =
+   localStorage.getItem("lotteryData");
+
+   if(savedData){
+
+      data = JSON.parse(savedData);
+
+   }else{
+
+      data = {};
+   }
+
+   renderSlots();
+   renderList();
+};
+
+/* SAVE BEFORE EXIT */
+window.addEventListener("beforeunload", () => {
+
+   localStorage.setItem(
+      "lotteryData",
+      JSON.stringify(data)
+   );
+
+});
+
+</script>
 </script>
 
 </body>
