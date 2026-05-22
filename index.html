@@ -6,6 +6,11 @@
 <title>ዳንኤል የመኪና እጣ</title>
 
 <style>
+
+*{
+    box-sizing:border-box;
+}
+
 body{
     font-family:Arial,sans-serif;
     background:#eef2f7;
@@ -78,6 +83,11 @@ button{
     font-size:16px;
     font-weight:bold;
     cursor:pointer;
+    transition:.2s;
+}
+
+button:hover{
+    opacity:.9;
 }
 
 .register-btn{
@@ -90,14 +100,10 @@ button{
     background:#dc2626;
 }
 
-button:hover{
-    opacity:.9;
-}
-
 .slots{
     display:grid;
     grid-template-columns:repeat(9,1fr);
-    gap:5px;
+    gap:6px;
     padding:20px;
     max-height:500px;
     overflow:auto;
@@ -112,13 +118,19 @@ button:hover{
     background:white;
     font-size:14px;
     font-weight:bold;
+    transition:.2s;
 }
 
+/* TAKEN */
 .slot.filled{
-    background:#22c55e;
+    background:#dc2626;
     color:white;
+    cursor:not-allowed;
+    opacity:.65;
+    pointer-events:none;
 }
 
+/* SELECTED */
 .slot.selected{
     background:#1e63d6;
     color:white;
@@ -126,122 +138,341 @@ button:hover{
 
 .list{
     padding:20px;
-    max-height:300px;
+    max-height:350px;
     overflow:auto;
 }
 
 .item{
     display:flex;
     justify-content:space-between;
-    padding:10px;
+    align-items:center;
+    gap:10px;
+    padding:12px;
     border-bottom:1px solid #eee;
     font-size:14px;
+}
+
+.item-left{
+    font-weight:bold;
+}
+
+.item-right{
+    color:#444;
 }
 
 .empty{
     color:red;
     font-weight:bold;
+    text-align:center;
+    padding:20px;
 }
+
+@media(max-width:700px){
+
+    .form{
+        grid-template-columns:1fr;
+    }
+
+    .register-btn,
+    .reset-btn{
+        grid-column:span 1;
+    }
+
+    .slots{
+        grid-template-columns:repeat(4,1fr);
+    }
+}
+
 </style>
 </head>
 <body>
 
 <div class="container">
 
+    <!-- IMAGE -->
     <div class="ticket-preview">
         <img src="lottery-ticket.jpg" alt="Lottery Ticket">
     </div>
 
+    <!-- HEADER -->
     <div class="top">
         <h1>ዳንኤል የመኪና እጣ</h1>
         <h2>ኢትዮጵያ ንግድ ባንክ 1000746664568</h2>
         <p>ዳንኤል ታዴ አድማሱ</p>
     </div>
 
+    <!-- FORM -->
     <div class="form">
-        <input id="name" placeholder="Name">
-        <input id="phone" type="number" placeholder="Phone">
-        <input id="selectedSlot" placeholder="Selected Slot" readonly>
 
-        <button class="register-btn" onclick="register()">Register</button>
-        <button class="reset-btn" onclick="resetAll()">Reset All</button>
+        <input id="name" placeholder="Name">
+
+        <input id="phone" type="number" placeholder="Phone">
+
+        <input id="selectedSlot"
+               placeholder="Selected Slot"
+               readonly>
+
+        <button class="register-btn"
+                onclick="register()">
+            Register
+        </button>
+
+        <button class="reset-btn"
+                onclick="resetAll()">
+            Reset All
+        </button>
+
     </div>
 
+    <!-- SLOTS -->
     <div class="slots" id="slots"></div>
+
+    <!-- LIST -->
     <div class="list" id="list"></div>
 
 </div>
 
 <script>
-let data = JSON.parse(localStorage.getItem("lotteryData")) || {};
+
+/* =========================
+   ADMIN PASSWORD
+========================= */
+
+const ADMIN_PASSWORD = "708090";
+
+/* =========================
+   STORAGE
+========================= */
+
+let data =
+JSON.parse(localStorage.getItem("lotteryData")) || {};
+
 let selected = null;
 
-const slotsDiv = document.getElementById("slots");
-const listDiv = document.getElementById("list");
+const slotsDiv =
+document.getElementById("slots");
+
+const listDiv =
+document.getElementById("list");
+
+/* =========================
+   SAVE
+========================= */
 
 function saveData(){
-   localStorage.setItem("lotteryData", JSON.stringify(data));
+
+   localStorage.setItem(
+      "lotteryData",
+      JSON.stringify(data)
+   );
 }
 
+/* =========================
+   RENDER SLOTS
+========================= */
+
 function renderSlots(){
+
    let html = "";
 
-   for(let i=1; i<=3000; i++){
+   for(let i = 1; i <= 3000; i++){
+
       let cls = "slot";
 
-      if(data[i]) cls += " filled";
-      if(selected === i) cls += " selected";
+      // FILLED
+      if(data[i]){
+         cls += " filled";
+      }
 
-      html += `<div class="${cls}" onclick="selectSlot(${i})">${i}</div>`;
+      // SELECTED
+      if(selected === i && !data[i]){
+         cls += " selected";
+      }
+
+      html += `
+      <div class="${cls}"
+           onclick="selectSlot(${i})">
+           ${i}
+      </div>
+      `;
    }
 
    slotsDiv.innerHTML = html;
 }
 
+/* =========================
+   SELECT SLOT
+========================= */
+
 function selectSlot(i){
+
+   // STOP IF FILLED
+   if(data[i]) return;
+
    selected = i;
-   document.getElementById("selectedSlot").value = i;
+
+   document.getElementById(
+      "selectedSlot"
+   ).value = i;
+
    renderSlots();
 }
 
+/* =========================
+   REGISTER
+========================= */
+
 function register(){
-   const name = document.getElementById("name").value.trim();
-   const phone = document.getElementById("phone").value.trim();
 
-   if(!selected) return alert("ቁጥር ምረጥ");
-   if(!name || !phone) return alert("ስም እና ስልክ ሙላ");
+   // PASSWORD
+   const password =
+   prompt("Admin Password አስገባ");
 
-   if(data[selected]) return alert("ይህ ቁጥር ተይዟል");
+   if(password !== ADMIN_PASSWORD){
 
-   data[selected] = { name, phone };
+      alert("የተሳሳተ Password");
+
+      return;
+   }
+
+   const name =
+   document.getElementById("name")
+   .value.trim();
+
+   const phone =
+   document.getElementById("phone")
+   .value.trim();
+
+   // NO SLOT
+   if(!selected){
+
+      alert("ቁጥር ምረጥ");
+
+      return;
+   }
+
+   // EMPTY INPUT
+   if(!name || !phone){
+
+      alert("ስም እና ስልክ ሙላ");
+
+      return;
+   }
+
+   // TAKEN
+   if(data[selected]){
+
+      alert("ይህ ቁጥር ተይዟል");
+
+      return;
+   }
+
+   // SAVE
+   data[selected] = {
+      name:name,
+      phone:phone
+   };
+
    saveData();
 
+   // CLEAR
    document.getElementById("name").value = "";
    document.getElementById("phone").value = "";
    document.getElementById("selectedSlot").value = "";
+
    selected = null;
 
    renderSlots();
    renderList();
+
+   alert("በትክክል ተመዝግቧል");
 }
 
+/* =========================
+   RENDER LIST
+========================= */
+
 function renderList(){
+
    listDiv.innerHTML = "";
 
-   for(let key in data){
-      if(data[key]){
-         listDiv.innerHTML += `
-         <div class="item">
-            <span>#${key} - ${data[key].name}</span>
-            <span>${data[key].phone}</span>
+   let keys = Object.keys(data);
+
+   // EMPTY
+   if(keys.length === 0){
+
+      listDiv.innerHTML = `
+      <div class="empty">
+          </div>
+      `;
+
+      return;
+   }
+
+   // SORT
+   keys.sort((a,b)=>a-b);
+
+   // LOOP
+   keys.forEach(key=>{
+
+      listDiv.innerHTML += `
+
+      <div class="item">
+
+         <div class="item-left">
+            #${key} - ${data[key].name}
          </div>
-         `;
-      }
+
+         <div class="item-right">
+            ${data[key].phone}
+         </div>
+
+      </div>
+
+      `;
+   });
+}
+
+/* =========================
+   RESET ALL
+========================= */
+
+function resetAll(){
+
+   const password =
+   prompt("Reset Password አስገባ");
+
+   if(password !== ADMIN_PASSWORD){
+
+      alert("የተሳሳተ Password");
+
+      return;
+   }
+
+   if(confirm("ሁሉንም ልታጠፋ ነው?")){
+
+      localStorage.removeItem("lotteryData");
+
+      data = {};
+
+      selected = null;
+
+      renderSlots();
+
+      renderList();
+
+      alert("ሁሉም ተሰርዟል");
    }
 }
 
+/* =========================
+   START
+========================= */
+
 renderSlots();
+
 renderList();
+
 </script>
 
 </body>
