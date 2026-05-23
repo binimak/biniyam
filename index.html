@@ -95,10 +95,6 @@ button:hover{
     background:#1e63d6;
 }
 
-.reset-btn{
-    grid-column:span 3;
-    background:#dc2626;
-}
 
 .slots{
     display:grid;
@@ -215,11 +211,6 @@ button:hover{
         <button class="register-btn"
                 onclick="register()">
             Register
-        </button>
-
-        <button class="reset-btn"
-                onclick="resetAll()">
-            Reset All
         </button>
 
     </div>
@@ -437,33 +428,7 @@ function renderList(){
    RESET ALL
 ========================= */
 
-function resetAll(){
 
-   const password =
-   prompt("Reset Password አስገባ");
-
-   if(password !== ADMIN_PASSWORD){
-
-      alert("የተሳሳተ Password");
-
-      return;
-   }
-
-   if(confirm("ሁሉንም ልታጠፋ ነው?")){
-
-      localStorage.removeItem("lotteryData");
-
-      data = {};
-
-      selected = null;
-
-      renderSlots();
-
-      renderList();
-
-      alert("ሁሉም ተሰርዟል");
-   }
-}
 
 /* =========================
    START
