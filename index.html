@@ -387,41 +387,43 @@ function renderList(){
 
    listDiv.innerHTML = "";
 
-   let keys = Object.keys(data);
+   const keys = Object.keys(data);
 
    // EMPTY
    if(keys.length === 0){
 
       listDiv.innerHTML = `
       <div class="empty">
-          </div>
+         እስካሁን ምንም ሰው አልተመዘገበም
+      </div>
       `;
 
       return;
    }
 
-   // SORT
-   keys.sort((a,b)=>a-b);
+   // SORT NUMBERS
+   keys.sort((a,b) => Number(a) - Number(b));
 
-   // LOOP
-   keys.forEach(key=>{
+   // SHOW LIST
+   keys.forEach(key => {
+
+      const user = data[key];
 
       listDiv.innerHTML += `
-
       <div class="item">
 
          <div class="item-left">
-            #${key} - ${data[key].name}
+            #${key} - ${user.name}
          </div>
 
          <div class="item-right">
-            ${data[key].phone}
+            ${user.phone}
          </div>
 
       </div>
-
       `;
    });
+
 }
 
 /* =========================
