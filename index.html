@@ -235,9 +235,7 @@ const ADMIN_PASSWORD = "708090";
    STORAGE
 ========================= */
 
-let data =
-JSON.parse(localStorage.getItem("lotteryData")) || {};
-
+let data = {};
 let selected = null;
 
 const slotsDiv =
@@ -245,6 +243,31 @@ document.getElementById("slots");
 
 const listDiv =
 document.getElementById("list");
+
+/* LOAD SAVED DATA */
+function loadData(){
+
+   const saved =
+   localStorage.getItem("lotteryData");
+
+   if(saved){
+
+      data = JSON.parse(saved);
+
+   }else{
+
+      data = {};
+   }
+}
+
+/* SAVE DATA */
+function saveData(){
+
+   localStorage.setItem(
+      "lotteryData",
+      JSON.stringify(data)
+   );
+}
 
 /* =========================
    SAVE
@@ -435,28 +458,37 @@ function renderList(){
 /* =========================
    START
 ========================= */
+/* =========================
+   START APP
+========================= */
+
+loadData();
+
+renderSlots();
+
+renderList();
 
 
 
-/* PAGE LOAD */
-window.onload = () => {
+/* SAVE BEFORE EXIT */
+window.addEventListener("beforeunload", () => {
 
-   const savedData =
-   localStorage.getItem("lotteryData");
+   localStorage.setItem(
+      "lotteryData",
+      JSON.stringify(data)
+   );
 
-   if(savedData){
+});
 
-      data = JSON.parse(savedData);
+/* SAVE BEFORE EXIT */
+window.addEventListener("beforeunload", () => {
 
-   }else{
+   localStorage.setItem(
+      "lotteryData",
+      JSON.stringify(data)
+   );
 
-      data = {};
-   }
-
-   renderSlots();
-   renderList();
-};
-
+});
 /* SAVE BEFORE EXIT */
 window.addEventListener("beforeunload", () => {
 
