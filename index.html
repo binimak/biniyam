@@ -222,178 +222,196 @@ button:hover{
     <div class="list" id="list"></div>
 
 </div>
-
-
 <script>
 
 const ADMIN_PASSWORD = "708090";
 
-/* STORAGE */
-let data = JSON.parse(localStorage.getItem("lotteryData")) || {};
-
+let data = {};
 let selected = null;
 
 const slotsDiv = document.getElementById("slots");
 const listDiv = document.getElementById("list");
 
+/* LOAD DATA */
+function loadData(){
+
+    const saved =
+    localStorage.getItem("lotteryData");
+
+    if(saved){
+
+        data = JSON.parse(saved);
+
+    }else{
+
+        data = {};
+    }
+}
+
 /* SAVE DATA */
 function saveData(){
 
-   localStorage.setItem(
-      "lotteryData",
-      JSON.stringify(data)
-   );
+    localStorage.setItem(
+        "lotteryData",
+        JSON.stringify(data)
+    );
 }
 
 /* RENDER SLOTS */
 function renderSlots(){
 
-   let html = "";
+    slotsDiv.innerHTML = "";
 
-   for(let i = 1; i <= 3000; i++){
+    for(let i = 1; i <= 3000; i++){
 
-      let cls = "slot";
+        const div =
+        document.createElement("div");
 
-      if(data[i]){
-         cls += " filled";
-      }
+        div.className = "slot";
 
-      if(selected === i && !data[i]){
-         cls += " selected";
-      }
+        div.innerText = i;
 
-      html += `
-      <div class="${cls}"
-           onclick="selectSlot(${i})">
-         ${i}
-      </div>
-      `;
-   }
+        if(data[i]){
 
-   slotsDiv.innerHTML = html;
-}
+            div.classList.add("filled");
 
-/* SELECT SLOT */
-function selectSlot(i){
+        }else{
 
-   if(data[i]) return;
+            div.onclick = () => {
 
-   selected = i;
+                selected = i;
 
-   document.getElementById(
-      "selectedSlot"
-   ).value = i;
+                document.getElementById(
+                    "selectedSlot"
+                ).value = i;
 
-   renderSlots();
+                renderSlots();
+            };
+        }
+
+        if(selected === i && !data[i]){
+
+            div.classList.add("selected");
+        }
+
+        slotsDiv.appendChild(div);
+    }
 }
 
 /* REGISTER */
 function register(){
 
-   const password =
-   prompt("Admin Password አስገባ");
+    const password =
+    prompt("Admin Password አስገባ");
 
-   if(password !== ADMIN_PASSWORD){
+    if(password !== ADMIN_PASSWORD){
 
-      alert("የተሳሳተ Password");
+        alert("የተሳሳተ Password");
 
-      return;
-   }
+        return;
+    }
 
-   const name =
-   document.getElementById("name")
-   .value.trim();
+    const name =
+    document.getElementById("name")
+    .value.trim();
 
-   const phone =
-   document.getElementById("phone")
-   .value.trim();
+    const phone =
+    document.getElementById("phone")
+    .value.trim();
 
-   if(!selected){
+    if(!selected){
 
-      alert("ቁጥር ምረጥ");
+        alert("ቁጥር ምረጥ");
 
-      return;
-   }
+        return;
+    }
 
-   if(!name || !phone){
+    if(!name || !phone){
 
-      alert("ስም እና ስልክ ሙላ");
+        alert("ስም እና ስልክ ሙላ");
 
-      return;
-   }
+        return;
+    }
 
-   if(data[selected]){
+    if(data[selected]){
 
-      alert("ይህ ቁጥር ተይዟል");
+        alert("ይህ ቁጥር ተይዟል");
 
-      return;
-   }
+        return;
+    }
 
-   data[selected] = {
-      name: name,
-      phone: phone
-   };
+    data[selected] = {
+        name: name,
+        phone: phone
+    };
 
-   saveData();
+    saveData();
 
-   document.getElementById("name").value = "";
-   document.getElementById("phone").value = "";
-   document.getElementById("selectedSlot").value = "";
+    document.getElementById("name").value = "";
+    document.getElementById("phone").value = "";
+    document.getElementById("selectedSlot").value = "";
 
-   selected = null;
+    selected = null;
 
-   renderSlots();
-   renderList();
+    renderSlots();
+    renderList();
 
-   alert("በትክክል ተመዝግቧል");
+    alert("በትክክል ተመዝግቧል");
 }
 
 /* RENDER LIST */
 function renderList(){
 
-   listDiv.innerHTML = "";
+    listDiv.innerHTML = "";
 
-   const keys = Object.keys(data);
+    const keys = Object.keys(data);
 
-   if(keys.length === 0){
+    if(keys.length === 0){
 
-      listDiv.innerHTML = `
-      <div class="empty">
-         እስካሁን ምንም ሰው አልተመዘገበም
-      </div>
-      `;
+        listDiv.innerHTML = `
+        <div class="empty">
+            እስካሁን ምንም ሰው አልተመዘገበም
+        </div>
+        `;
 
-      return;
-   }
+        return;
+    }
 
-   keys.sort((a,b)=> Number(a) - Number(b));
+    keys.sort((a,b)=> Number(a)-Number(b));
 
-   keys.forEach(key => {
+    keys.forEach(key => {
 
-      const user = data[key];
+        const user = data[key];
 
-      listDiv.innerHTML += `
-      <div class="item">
+        const item =
+        document.createElement("div");
 
-         <div class="item-left">
+        item.className = "item";
+
+        item.innerHTML = `
+        <div class="item-left">
             #${key} - ${user.name}
-         </div>
+        </div>
 
-         <div class="item-right">
+        <div class="item-right">
             ${user.phone}
-         </div>
+        </div>
+        `;
 
-      </div>
-      `;
-   });
+        listDiv.appendChild(item);
+    });
 }
 
-/* START APP */
+/* START */
+loadData();
 renderSlots();
 renderList();
 
 </script>
-      
+
+
+
+   
 
 </body>
 </html>
