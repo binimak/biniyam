@@ -222,43 +222,19 @@ button:hover{
     <div class="list" id="list"></div>
 
 </div>
+አዎ፣ <script> ውስጥ ያለውን ሙሉ አጥፋ እና ይሄን ብቻ አስገባ👇
 
 <script>
 
-/* =========================
-   ADMIN PASSWORD
-========================= */
-
 const ADMIN_PASSWORD = "708090";
 
-/* =========================
-   STORAGE
-========================= */
+/* STORAGE */
+let data = JSON.parse(localStorage.getItem("lotteryData")) || {};
 
-let data = {};
 let selected = null;
 
-const slotsDiv =
-document.getElementById("slots");
-
-const listDiv =
-document.getElementById("list");
-
-/* LOAD SAVED DATA */
-function loadData(){
-
-   const saved =
-   localStorage.getItem("lotteryData");
-
-   if(saved){
-
-      data = JSON.parse(saved);
-
-   }else{
-
-      data = {};
-   }
-}
+const slotsDiv = document.getElementById("slots");
+const listDiv = document.getElementById("list");
 
 /* SAVE DATA */
 function saveData(){
@@ -269,22 +245,7 @@ function saveData(){
    );
 }
 
-/* =========================
-   SAVE
-========================= */
-
-function saveData(){
-
-   localStorage.setItem(
-      "lotteryData",
-      JSON.stringify(data)
-   );
-}
-
-/* =========================
-   RENDER SLOTS
-========================= */
-
+/* RENDER SLOTS */
 function renderSlots(){
 
    let html = "";
@@ -293,12 +254,10 @@ function renderSlots(){
 
       let cls = "slot";
 
-      // FILLED
       if(data[i]){
          cls += " filled";
       }
 
-      // SELECTED
       if(selected === i && !data[i]){
          cls += " selected";
       }
@@ -306,7 +265,7 @@ function renderSlots(){
       html += `
       <div class="${cls}"
            onclick="selectSlot(${i})">
-           ${i}
+         ${i}
       </div>
       `;
    }
@@ -314,13 +273,9 @@ function renderSlots(){
    slotsDiv.innerHTML = html;
 }
 
-/* =========================
-   SELECT SLOT
-========================= */
-
+/* SELECT SLOT */
 function selectSlot(i){
 
-   // STOP IF FILLED
    if(data[i]) return;
 
    selected = i;
@@ -332,13 +287,9 @@ function selectSlot(i){
    renderSlots();
 }
 
-/* =========================
-   REGISTER
-========================= */
-
+/* REGISTER */
 function register(){
 
-   // PASSWORD
    const password =
    prompt("Admin Password አስገባ");
 
@@ -357,7 +308,6 @@ function register(){
    document.getElementById("phone")
    .value.trim();
 
-   // NO SLOT
    if(!selected){
 
       alert("ቁጥር ምረጥ");
@@ -365,7 +315,6 @@ function register(){
       return;
    }
 
-   // EMPTY INPUT
    if(!name || !phone){
 
       alert("ስም እና ስልክ ሙላ");
@@ -373,7 +322,6 @@ function register(){
       return;
    }
 
-   // TAKEN
    if(data[selected]){
 
       alert("ይህ ቁጥር ተይዟል");
@@ -381,15 +329,13 @@ function register(){
       return;
    }
 
-   // SAVE
    data[selected] = {
-      name:name,
-      phone:phone
+      name: name,
+      phone: phone
    };
 
    saveData();
 
-   // CLEAR
    document.getElementById("name").value = "";
    document.getElementById("phone").value = "";
    document.getElementById("selectedSlot").value = "";
@@ -402,17 +348,13 @@ function register(){
    alert("በትክክል ተመዝግቧል");
 }
 
-/* =========================
-   RENDER LIST
-========================= */
-
+/* RENDER LIST */
 function renderList(){
 
    listDiv.innerHTML = "";
 
    const keys = Object.keys(data);
 
-   // EMPTY
    if(keys.length === 0){
 
       listDiv.innerHTML = `
@@ -424,10 +366,8 @@ function renderList(){
       return;
    }
 
-   // SORT NUMBERS
-   keys.sort((a,b) => Number(a) - Number(b));
+   keys.sort((a,b)=> Number(a) - Number(b));
 
-   // SHOW LIST
    keys.forEach(key => {
 
       const user = data[key];
@@ -446,60 +386,14 @@ function renderList(){
       </div>
       `;
    });
-
 }
 
-/* =========================
-   RESET ALL
-========================= */
-
-
-
-/* =========================
-   START
-========================= */
-/* =========================
-   START APP
-========================= */
-
-loadData();
-
+/* START APP */
 renderSlots();
-
 renderList();
 
-
-
-/* SAVE BEFORE EXIT */
-window.addEventListener("beforeunload", () => {
-
-   localStorage.setItem(
-      "lotteryData",
-      JSON.stringify(data)
-   );
-
-});
-
-/* SAVE BEFORE EXIT */
-window.addEventListener("beforeunload", () => {
-
-   localStorage.setItem(
-      "lotteryData",
-      JSON.stringify(data)
-   );
-
-});
-/* SAVE BEFORE EXIT */
-window.addEventListener("beforeunload", () => {
-
-   localStorage.setItem(
-      "lotteryData",
-      JSON.stringify(data)
-   );
-
-});
-
 </script>
+      
 
 </body>
 </html>
