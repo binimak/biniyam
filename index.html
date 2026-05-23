@@ -226,6 +226,9 @@ button:hover{
 
 const ADMIN_PASSWORD = "708090";
 
+/* LOCAL STORAGE KEY */
+const STORAGE_KEY = "lotteryData_v2";
+
 let data = {};
 let selected = null;
 
@@ -235,14 +238,21 @@ const listDiv = document.getElementById("list");
 /* LOAD DATA */
 function loadData(){
 
-    const saved =
-    localStorage.getItem("lotteryData");
+    try{
 
-    if(saved){
+        const saved =
+        localStorage.getItem(STORAGE_KEY);
 
-        data = JSON.parse(saved);
+        if(saved){
 
-    }else{
+            data = JSON.parse(saved) || {};
+
+        }else{
+
+            data = {};
+        }
+
+    }catch(err){
 
         data = {};
     }
@@ -252,7 +262,7 @@ function loadData(){
 function saveData(){
 
     localStorage.setItem(
-        "lotteryData",
+        STORAGE_KEY,
         JSON.stringify(data)
     );
 }
@@ -340,13 +350,17 @@ function register(){
         return;
     }
 
+    /* SAVE USER */
     data[selected] = {
         name: name,
-        phone: phone
+        phone: phone,
+        date: new Date().toLocaleString()
     };
 
+    /* SAVE TO LOCAL STORAGE */
     saveData();
 
+    /* CLEAR INPUTS */
     document.getElementById("name").value = "";
     document.getElementById("phone").value = "";
     document.getElementById("selectedSlot").value = "";
@@ -391,6 +405,8 @@ function renderList(){
         item.innerHTML = `
         <div class="item-left">
             #${key} - ${user.name}
+            <br>
+            <small>${user.date || ""}</small>
         </div>
 
         <div class="item-right">
@@ -402,16 +418,18 @@ function renderList(){
     });
 }
 
+/* AUTO BACKUP EVERY 5 SECONDS */
+setInterval(() => {
+
+    saveData();
+
+}, 5000);
+
 /* START */
 loadData();
 renderSlots();
 renderList();
 
 </script>
-
-
-
-   
-
 </body>
 </html>
